@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"time"
 
 	"recruit/internal/model"
@@ -31,11 +32,19 @@ func (s *Service) CreateResume(input model.Resume) (*model.Resume, error) {
 }
 
 func (s *Service) GetResume(id string) (*model.Resume, error) {
-	return s.store.GetResume(id)
+	v, err := s.store.GetResume(id)
+	if err != nil {
+		return nil, fmt.Errorf("get resume: %v", err)
+	}
+	return v, nil
 }
 
 func (s *Service) GetResumeByCandidate(candidateID string) (*model.Resume, error) {
-	return s.store.GetResumeByCandidate(candidateID)
+	v, err := s.store.GetResumeByCandidate(candidateID)
+	if err != nil {
+		return nil, fmt.Errorf("get resume by candidate: %v", err)
+	}
+	return v, nil
 }
 
 func (s *Service) UpdateResume(id string, input model.Resume) (*model.Resume, error) {

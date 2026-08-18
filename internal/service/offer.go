@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -86,7 +87,11 @@ func (s *Service) DeclineOffer(id string) (*model.Offer, error) {
 }
 
 func (s *Service) GetOffer(id string) (*model.Offer, error) {
-	return s.store.GetOffer(id)
+	v, err := s.store.GetOffer(id)
+	if err != nil {
+		return nil, fmt.Errorf("get offer: %v", err)
+	}
+	return v, nil
 }
 
 func (s *Service) ListOffers(filter model.OfferFilter, page, size int) ([]*model.Offer, int, error) {

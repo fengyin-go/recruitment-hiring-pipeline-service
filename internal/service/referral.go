@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -54,7 +55,11 @@ func (s *Service) MarkReferralHired(id string) (*model.Referral, error) {
 }
 
 func (s *Service) GetReferral(id string) (*model.Referral, error) {
-	return s.store.GetReferral(id)
+	v, err := s.store.GetReferral(id)
+	if err != nil {
+		return nil, fmt.Errorf("get referral: %v", err)
+	}
+	return v, nil
 }
 
 func (s *Service) ListReferrals(filter model.ReferralFilter, page, size int) ([]*model.Referral, int, error) {
