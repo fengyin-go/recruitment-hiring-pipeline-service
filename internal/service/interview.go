@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sort"
 	"time"
 
@@ -75,11 +74,7 @@ func (s *Service) CompleteInterview(id string, passed bool, feedback string) (*m
 }
 
 func (s *Service) GetInterview(id string) (*model.Interview, error) {
-	v, err := s.store.GetInterview(id)
-	if err != nil {
-		return nil, fmt.Errorf("get interview: %v", err)
-	}
-	return v, nil
+	return s.store.GetInterview(id)
 }
 
 func (s *Service) ListInterviews(filter model.InterviewFilter, page, size int) ([]*model.Interview, int, error) {

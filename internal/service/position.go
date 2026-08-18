@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sort"
 	"time"
 
@@ -36,11 +35,7 @@ func (s *Service) CreatePosition(input model.Position) (*model.Position, error) 
 }
 
 func (s *Service) GetPosition(id string) (*model.Position, error) {
-	v, err := s.store.GetPosition(id)
-	if err != nil {
-		return nil, fmt.Errorf("get position: %v", err)
-	}
-	return v, nil
+	return s.store.GetPosition(id)
 }
 
 func (s *Service) ListPositions(filter model.PositionFilter, page, size int) ([]*model.Position, int, error) {

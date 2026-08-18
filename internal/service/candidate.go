@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sort"
 	"time"
 
@@ -40,11 +39,7 @@ func (s *Service) CreateCandidate(input model.Candidate) (*model.Candidate, erro
 }
 
 func (s *Service) GetCandidate(id string) (*model.Candidate, error) {
-	v, err := s.store.GetCandidate(id)
-	if err != nil {
-		return nil, fmt.Errorf("get candidate: %v", err)
-	}
-	return v, nil
+	return s.store.GetCandidate(id)
 }
 
 func (s *Service) ListCandidates(filter model.CandidateFilter, page, size int) ([]*model.Candidate, int, error) {

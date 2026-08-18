@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sort"
 	"time"
 
@@ -21,11 +20,7 @@ func (s *Service) CreateDepartment(input model.Department) (*model.Department, e
 }
 
 func (s *Service) GetDepartment(id string) (*model.Department, error) {
-	v, err := s.store.GetDepartment(id)
-	if err != nil {
-		return nil, fmt.Errorf("get department: %v", err)
-	}
-	return v, nil
+	return s.store.GetDepartment(id)
 }
 
 func (s *Service) ListDepartments(page, size int) ([]*model.Department, int, error) {
