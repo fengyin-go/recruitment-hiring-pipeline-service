@@ -78,11 +78,10 @@ func (s *Service) transitionCandidate(id, target string) (*model.Candidate, erro
 	if model.IsTerminalCandidate(target) {
 		c.FinishedAt = &now
 		if target == model.CandidateHired {
-			// 入职后职位录用数 +1
-			if pos, err := s.store.GetPosition(c.PositionID); err == nil {
-				pos.HiredCount++
-				pos.UpdatedAt = now
-				_ = s.store.UpdatePosition(pos)
+			// 入职后职位录用数 +1：必须在存储锁内原子完成，
+			// 否则并发接受多个 Offer 时 read-modify-write 会互相覆盖丢失更新。
+			if err := s.store.IncrementPositionHiredCount(c.PositionID); err != nil {
+				return nil, err
 			}
 		}
 	}

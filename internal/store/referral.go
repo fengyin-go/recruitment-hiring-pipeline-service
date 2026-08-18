@@ -12,7 +12,8 @@ func (s *MemoryStore) CreateReferral(r *model.Referral) error {
 			return ErrConflict
 		}
 	}
-	s.referrals[r.ID] = r
+	cp := *r
+	s.referrals[r.ID] = &cp
 	return nil
 }
 
@@ -23,7 +24,8 @@ func (s *MemoryStore) GetReferral(id string) (*model.Referral, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return r, nil
+	cp := *r
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListReferrals() []*model.Referral {
@@ -31,7 +33,8 @@ func (s *MemoryStore) ListReferrals() []*model.Referral {
 	defer s.mu.RUnlock()
 	list := make([]*model.Referral, 0, len(s.referrals))
 	for _, r := range s.referrals {
-		list = append(list, r)
+		cp := *r
+		list = append(list, &cp)
 	}
 	return list
 }
@@ -42,6 +45,7 @@ func (s *MemoryStore) UpdateReferral(r *model.Referral) error {
 	if _, ok := s.referrals[r.ID]; !ok {
 		return ErrNotFound
 	}
-	s.referrals[r.ID] = r
+	cp := *r
+	s.referrals[r.ID] = &cp
 	return nil
 }

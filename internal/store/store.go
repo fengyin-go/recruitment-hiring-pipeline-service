@@ -27,6 +27,9 @@ type Store interface {
 	ListPositions() []*model.Position
 	UpdatePosition(p *model.Position) error
 	DeletePosition(id string) error
+	// IncrementPositionHiredCount 原子地将职位已入职人数 +1。
+	// read-modify-write 必须在存储锁内完成，否则并发接受 Offer 会丢失更新。
+	IncrementPositionHiredCount(id string) error
 
 	// 候选人
 	CreateCandidate(c *model.Candidate) error

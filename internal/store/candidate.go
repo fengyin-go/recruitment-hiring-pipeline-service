@@ -12,7 +12,8 @@ func (s *MemoryStore) CreateCandidate(c *model.Candidate) error {
 			return ErrConflict
 		}
 	}
-	s.candidates[c.ID] = c
+	cp := *c
+	s.candidates[c.ID] = &cp
 	return nil
 }
 
@@ -23,7 +24,8 @@ func (s *MemoryStore) GetCandidate(id string) (*model.Candidate, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return c, nil
+	cp := *c
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListCandidates() []*model.Candidate {
@@ -31,7 +33,8 @@ func (s *MemoryStore) ListCandidates() []*model.Candidate {
 	defer s.mu.RUnlock()
 	list := make([]*model.Candidate, 0, len(s.candidates))
 	for _, c := range s.candidates {
-		list = append(list, c)
+		cp := *c
+		list = append(list, &cp)
 	}
 	return list
 }
@@ -42,7 +45,8 @@ func (s *MemoryStore) UpdateCandidate(c *model.Candidate) error {
 	if _, ok := s.candidates[c.ID]; !ok {
 		return ErrNotFound
 	}
-	s.candidates[c.ID] = c
+	cp := *c
+	s.candidates[c.ID] = &cp
 	return nil
 }
 

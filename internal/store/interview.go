@@ -7,7 +7,8 @@ import (
 func (s *MemoryStore) CreateInterview(i *model.Interview) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.interviews[i.ID] = i
+	cp := *i
+	s.interviews[i.ID] = &cp
 	return nil
 }
 
@@ -18,7 +19,8 @@ func (s *MemoryStore) GetInterview(id string) (*model.Interview, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return i, nil
+	cp := *i
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListInterviews() []*model.Interview {
@@ -26,7 +28,8 @@ func (s *MemoryStore) ListInterviews() []*model.Interview {
 	defer s.mu.RUnlock()
 	list := make([]*model.Interview, 0, len(s.interviews))
 	for _, i := range s.interviews {
-		list = append(list, i)
+		cp := *i
+		list = append(list, &cp)
 	}
 	return list
 }
@@ -37,6 +40,7 @@ func (s *MemoryStore) UpdateInterview(i *model.Interview) error {
 	if _, ok := s.interviews[i.ID]; !ok {
 		return ErrNotFound
 	}
-	s.interviews[i.ID] = i
+	cp := *i
+	s.interviews[i.ID] = &cp
 	return nil
 }

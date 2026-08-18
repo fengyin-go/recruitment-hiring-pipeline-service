@@ -12,7 +12,8 @@ func (s *MemoryStore) CreateOffer(o *model.Offer) error {
 			return ErrConflict
 		}
 	}
-	s.offers[o.ID] = o
+	cp := *o
+	s.offers[o.ID] = &cp
 	return nil
 }
 
@@ -23,7 +24,8 @@ func (s *MemoryStore) GetOffer(id string) (*model.Offer, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return o, nil
+	cp := *o
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListOffers() []*model.Offer {
@@ -31,7 +33,8 @@ func (s *MemoryStore) ListOffers() []*model.Offer {
 	defer s.mu.RUnlock()
 	list := make([]*model.Offer, 0, len(s.offers))
 	for _, o := range s.offers {
-		list = append(list, o)
+		cp := *o
+		list = append(list, &cp)
 	}
 	return list
 }
@@ -42,6 +45,7 @@ func (s *MemoryStore) UpdateOffer(o *model.Offer) error {
 	if _, ok := s.offers[o.ID]; !ok {
 		return ErrNotFound
 	}
-	s.offers[o.ID] = o
+	cp := *o
+	s.offers[o.ID] = &cp
 	return nil
 }

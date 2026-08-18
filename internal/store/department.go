@@ -12,7 +12,8 @@ func (s *MemoryStore) CreateDepartment(d *model.Department) error {
 			return ErrConflict
 		}
 	}
-	s.departments[d.ID] = d
+	cp := *d
+	s.departments[d.ID] = &cp
 	return nil
 }
 
@@ -23,7 +24,8 @@ func (s *MemoryStore) GetDepartment(id string) (*model.Department, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return d, nil
+	cp := *d
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListDepartments() []*model.Department {
@@ -31,7 +33,8 @@ func (s *MemoryStore) ListDepartments() []*model.Department {
 	defer s.mu.RUnlock()
 	list := make([]*model.Department, 0, len(s.departments))
 	for _, d := range s.departments {
-		list = append(list, d)
+		cp := *d
+		list = append(list, &cp)
 	}
 	return list
 }
@@ -47,7 +50,8 @@ func (s *MemoryStore) UpdateDepartment(d *model.Department) error {
 			return ErrConflict
 		}
 	}
-	s.departments[d.ID] = d
+	cp := *d
+	s.departments[d.ID] = &cp
 	return nil
 }
 
