@@ -54,13 +54,7 @@ func (s *Service) CompleteInterview(id string, passed bool, feedback string) (*m
 	if !model.CanTransitionInterview(iv.Status, model.InterviewCompleted) {
 		return nil, store.ErrConflict
 	}
-	iv.Status = model.InterviewCompleted
-	iv.Passed = passed
-	iv.Feedback = feedback
-	if err := s.store.UpdateInterview(iv); err != nil {
-		return nil, err
-	}
-	// 同步候选人状态
+	// 先同步候选人状态，成功后再把面试标记为完成，避免失败时留下不一致状态。
 	if passed {
 		if _, err := s.transitionCandidate(iv.CandidateID, model.CandidateOffered); err != nil {
 			return nil, err
@@ -69,6 +63,12 @@ func (s *Service) CompleteInterview(id string, passed bool, feedback string) (*m
 		if _, err := s.transitionCandidate(iv.CandidateID, model.CandidateRejected); err != nil {
 			return nil, err
 		}
+	}
+	iv.Status = model.InterviewCompleted
+	iv.Passed = passed
+	iv.Feedback = feedback
+	if err := s.store.UpdateInterview(iv); err != nil {
+		return nil, err
 	}
 	return iv, nil
 }
