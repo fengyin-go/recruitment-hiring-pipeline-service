@@ -23,7 +23,12 @@ func (s *MemoryStore) GetCandidate(id string) (*model.Candidate, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return c, nil
+	cp := *c
+	if c.FinishedAt != nil {
+		t := *c.FinishedAt
+		cp.FinishedAt = &t
+	}
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListCandidates() []*model.Candidate {
@@ -31,7 +36,12 @@ func (s *MemoryStore) ListCandidates() []*model.Candidate {
 	defer s.mu.RUnlock()
 	list := make([]*model.Candidate, 0, len(s.candidates))
 	for _, c := range s.candidates {
-		list = append(list, c)
+		cp := *c
+		if c.FinishedAt != nil {
+			t := *c.FinishedAt
+			cp.FinishedAt = &t
+		}
+		list = append(list, &cp)
 	}
 	return list
 }

@@ -78,11 +78,9 @@ func (s *Service) transitionCandidate(id, target string) (*model.Candidate, erro
 	if model.IsTerminalCandidate(target) {
 		c.FinishedAt = &now
 		if target == model.CandidateHired {
-			// 入职后职位录用数 +1
-			if pos, err := s.store.GetPosition(c.PositionID); err == nil {
-				pos.HiredCount++
-				pos.UpdatedAt = now
-				_ = s.store.UpdatePosition(pos)
+			// 入职后职位录用数 +1（原子累加，避免并发入职丢更新）
+			if err := s.store.IncrementPositionHiredCount(c.PositionID, 1); err != nil {
+				return nil, err
 			}
 		}
 	}

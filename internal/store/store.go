@@ -27,6 +27,7 @@ type Store interface {
 	ListPositions() []*model.Position
 	UpdatePosition(p *model.Position) error
 	DeletePosition(id string) error
+	IncrementPositionHiredCount(id string, delta int) error
 
 	// 候选人
 	CreateCandidate(c *model.Candidate) error

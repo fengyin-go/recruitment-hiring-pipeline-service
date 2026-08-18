@@ -1,6 +1,8 @@
 package store
 
 import (
+	"time"
+
 	"recruit/internal/model"
 )
 
@@ -23,7 +25,8 @@ func (s *MemoryStore) GetPosition(id string) (*model.Position, error) {
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return p, nil
+	cp := *p
+	return &cp, nil
 }
 
 func (s *MemoryStore) ListPositions() []*model.Position {
@@ -31,9 +34,23 @@ func (s *MemoryStore) ListPositions() []*model.Position {
 	defer s.mu.RUnlock()
 	list := make([]*model.Position, 0, len(s.positions))
 	for _, p := range s.positions {
-		list = append(list, p)
+		cp := *p
+		list = append(list, &cp)
 	}
 	return list
+}
+
+// IncrementPositionHiredCount 原子地累加职位的已入职人数，避免并发入职时读改写丢失更新。
+func (s *MemoryStore) IncrementPositionHiredCount(id string, delta int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	p, ok := s.positions[id]
+	if !ok {
+		return ErrNotFound
+	}
+	p.HiredCount += delta
+	p.UpdatedAt = time.Now()
+	return nil
 }
 
 func (s *MemoryStore) UpdatePosition(p *model.Position) error {
